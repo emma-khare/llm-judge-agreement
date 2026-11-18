@@ -1,0 +1,10 @@
+# Nothing is required to run the study or the report: analysis.py is standard
+# library only, and the default judge is simulated.
+#
+# Optional extras:
+
+# Figures (python3 analysis.py --charts)
+matplotlib>=3.7
+
+# Live runs against the real API (see README, "Run it live")
+# anthropic>=0.40

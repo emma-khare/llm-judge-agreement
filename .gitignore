@@ -18,6 +18,11 @@ venv/
 .vscode/
 .idea/
 
-# Outputs
+# Outputs (data/judge_runs.csv and reports/ ARE committed: the README links them)
 output/
 *.log
+
+# Personal material, kept out of a public study repo: the CV has a phone number
+# and email in it, and the rebrand script belongs to the portfolio repo.
+resume/
+rebrand_portfolio.py

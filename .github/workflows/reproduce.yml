@@ -1,0 +1,31 @@
+name: reproduce
+
+# The study is deterministic and has no dependencies, so a clean runner can
+# regenerate every number in the README and fail if they have drifted.
+# That is the whole point of publishing a measurement project.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  report:
+    name: report (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Run the study
+        run: python3 analysis.py
+
+      - name: Check the README still matches the output
+        run: python3 -m unittest discover -s tests -t . -v
