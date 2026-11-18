@@ -26,3 +26,6 @@ output/
 # and email in it, and the rebrand script belongs to the portfolio repo.
 resume/
 rebrand_portfolio.py
+
+# Third-party data (CC BY-NC 4.0), fetched by download_chaosnli.py
+data/chaosnli/

@@ -91,6 +91,56 @@ unanimous, within-item SD 0.00. Its kappa is still only **0.94**, and its exact 
 it is *consistently* a little too generous. Perfect stability, imperfect accuracy. A
 reliability statistic alone cannot tell you a judge is right.
 
+## The ceiling: how well do humans agree? (real data)
+
+Every number above compares the judge to **one** annotator. That comparison has no
+reference point, so this repository also measures how well humans agree with each other on
+items of the same kind, using [ChaosNLI](https://github.com/easonnie/ChaosNLI) (Nie et al.,
+2020): **100 human annotations per item** on 4,645 items from the development sets of three
+NLI datasets.
+
+```bash
+python3 download_chaosnli.py   # fetches and SHA-256 verifies the four files
+python3 human_ceiling.py
+```
+
+| Dataset | Items | Two random annotators (Cohen's kappa) | Fleiss' kappa | Their raw agreement |
+|---|---|---|---|---|
+| SNLI | 1,514 | **0.452** (95% CI 0.416-0.489) | 0.447 | 66.1% |
+| MultiNLI | 1,599 | **0.290** (95% CI 0.252-0.325) | 0.283 | 54.4% |
+| alphaNLI | 1,532 | **0.652** (95% CI 0.619-0.684) | 0.648 | 82.6% |
+
+The two estimators are independent — one resamples two annotators per item, the other
+aggregates all 100 — and they agree to within 0.01 on every dataset. That agreement is the
+evidence both are implemented correctly, and `tests/test_human_ceiling.py` pins the
+statistics against hand-computed values.
+
+**What this means for the judge.** The single-call judge scores 0.670 against one human and
+0.890 after majority voting. Both are **above every human ceiling here**, including
+MultiNLI's 0.290 by a wide margin. That is not a victory. Agreement with a single annotator
+cannot distinguish shared judgment from shared error: the judge and that annotator can be
+wrong together, and the kappa will look excellent. **Exceeding the human ceiling is a
+warning sign about the comparison, not evidence about the judge.**
+
+The right design is the one in [NEXT_STEPS.md](NEXT_STEPS.md) #4: multiple independent
+raters, an adjudicated gold set, the inter-human ceiling reported on the same items as the
+judge — and the judge measured against the gold set, not against one person.
+
+### A method that did not survive contact with the data
+
+ChaosNLI also ships `old_labels`, the five original annotator labels for SNLI and MultiNLI
+items. Computing the ten pairwise rater-pair kappas from that field would be a stricter
+estimate, so it was tried: every pair came out at roughly **0.03** on both datasets —
+indistinguishable from chance — while the count-based estimator gave 0.45 and 0.29. The
+ordering of `old_labels` is not stable across items, so "rater 3" on item 1 and "rater 3" on
+item 2 are different people. The pairing destroys the signal, so it is documented here and
+**not** reported as a result. A per-rater estimate needs persistent rater IDs, which this
+release does not include.
+
+The ChaosNLI data is CC BY-NC 4.0, so it is not committed — only the checksum-pinned
+downloader is. Cite Nie et al. (2020), *What Can We Learn from Collective Human Opinions on
+Natural Language Inference Data?*, EMNLP.
+
 ## What's here
 
 | Path | What it is |
@@ -102,6 +152,8 @@ reliability statistic alone cannot tell you a judge is right.
 | `src/judge_reliability/reliability.py` | ICC, kappa (nominal and weighted), bootstrap CI, majority vote, error decomposition |
 | `src/judge_reliability/charts.py` | The three figures (matplotlib, optional) |
 | `data/judge_runs.csv` | The recorded 8 runs per item, for inspection |
+| `human_ceiling.py` | Human inter-annotator agreement on real data (ChaosNLI) — the ceiling the judge is compared against |
+| `download_chaosnli.py` | Fetches and SHA-256 verifies the ChaosNLI files; the data itself is not committed (CC BY-NC 4.0) |
 | `reports/` | The figures |
 | `LIMITATIONS.md`, `NEXT_STEPS.md`, `BUILD_LOG.md`, `REBUILD.md` | Constraints, extensions, build record, the rebuild exercise |
 
