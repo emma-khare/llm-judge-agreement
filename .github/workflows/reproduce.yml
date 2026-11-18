@@ -12,11 +12,17 @@ on:
 jobs:
   report:
     name: report (py${{ matrix.python }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.9", "3.12"]
+        # 3.9 is the oldest version the study claims to support, but it is no
+        # longer provisioned on ubuntu-latest, so it gets a matching runner.
+        include:
+          - python: "3.9"
+            os: ubuntu-22.04
+          - python: "3.12"
+            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
