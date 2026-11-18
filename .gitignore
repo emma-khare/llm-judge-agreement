@@ -1,0 +1,23 @@
+# chat attachments (not project files)
+.cloud-attachments/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Environment / secrets
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+
+# Outputs
+output/
+*.log
